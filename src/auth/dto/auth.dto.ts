@@ -11,9 +11,9 @@ export class AuthDto {
 
     @IsOptional() // Mark as optional for sign-up
     @IsString()
-    firstName?: string;
+    fullName?: string;
 
     @IsOptional() // Mark as optional for sign-up
     @IsString()
-    lastName?: string;
+    username?: string;
 }

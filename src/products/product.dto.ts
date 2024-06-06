@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsBoolean,
+  IsDateString,
 } from 'class-validator';
 
 export class ProductDto {
@@ -12,9 +13,10 @@ export class ProductDto {
   @IsNotEmpty()
   name: string;
   @IsString()
-  model: string;
-  @IsString()
-  SAP: string;
+  productIdNumber: string;
+  @IsNumber()
+  @IsNotEmpty()
+  reaorderLevel: number;
 
   @IsNumber()
   @IsNotEmpty()
@@ -39,8 +41,14 @@ export class ProductDto {
   @IsOptional()
   @IsNumber()
   quantity?: number;
+  @IsOptional()
+  @IsNumber()
+  storeQuantity?: number;
 
   @IsOptional()
   @IsBoolean()
   countable?: boolean;
+  @IsOptional()
+  @IsDateString()
+  expiryDate?: Date;
 }

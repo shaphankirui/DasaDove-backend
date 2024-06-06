@@ -5,7 +5,6 @@ import { BlogDto } from './dto/blog.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import slugify from 'slugify'; // Import slugify library
 
-
 @Injectable()
 export class BlogService {
   constructor(private readonly prisma: PrismaService) {}
@@ -18,7 +17,7 @@ export class BlogService {
         slug, // Assign slug to the database
         body: dto.body,
         pictureUrl: dto.pictureUrl,
-        // postedBy: dto.postedBy, 
+        // postedBy: dto.postedBy,
         user: {
           connect: { id: userId },
         },
@@ -35,15 +34,14 @@ export class BlogService {
           select: {
             id: true,
             email: true,
-            firstName: true,
-            lastName: true,
+            fullName: true,
+
             // Exclude the password field
           },
         },
       },
     });
   }
-  
 
   async getBlogById(id: number) {
     const blog = await this.prisma.blog.findUnique({

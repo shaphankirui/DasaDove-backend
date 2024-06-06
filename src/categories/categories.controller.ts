@@ -6,7 +6,7 @@ import { JwtGuard } from 'src/auth/guard';
 @Controller('categories')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   @Post()
   async createCategory(@Body() dto: CategoryDto) {
     return this.categoryService.createCategory(dto);

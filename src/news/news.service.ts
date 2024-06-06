@@ -5,7 +5,7 @@ import slugify from 'slugify';
 
 @Injectable()
 export class NewsService {
-    constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async createNews(dto: NewsDto, userId: number) {
     const slug = slugify(dto.title, { lower: true, strict: true }); // Generate slug from title
@@ -15,7 +15,7 @@ export class NewsService {
         slug, // Assign slug to the database
         body: dto.body,
         pictureUrl: dto.pictureUrl,
-        // postedBy: dto.postedBy, 
+        // postedBy: dto.postedBy,
         user: {
           connect: { id: userId },
         },
@@ -32,15 +32,14 @@ export class NewsService {
           select: {
             id: true,
             email: true,
-            firstName: true,
-            lastName: true,
+            fullName: true,
+
             // Exclude the password field
           },
         },
       },
     });
   }
-  
 
   async getNewById(id: number) {
     const news = await this.prisma.news.findUnique({
