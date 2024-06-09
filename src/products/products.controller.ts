@@ -32,13 +32,13 @@ export class ProductController {
     return this.productService.getProductById(+id);
   }
 
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   @Put(':id')
   async updateProduct(@Param('id') id: string, @Body() dto: ProductDto) {
     return this.productService.updateProduct(+id, dto);
   }
 
-  @UseGuards(JwtGuard)
+  // @UseGuards(JwtGuard)
   @Delete(':id')
   async deleteProduct(@Param('id') id: string) {
     return this.productService.deleteProduct(+id);
