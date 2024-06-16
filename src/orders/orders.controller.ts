@@ -1,6 +1,15 @@
 // orders.controller.ts
 
-import { Body, Controller, Get, Post, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Param,
+  Put,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { OrderDto } from './orders.dto';
 import { OrdersService } from './orders.service';
 import { User } from '@prisma/client';
@@ -39,6 +48,5 @@ export class OrdersController {
   async deleteOrder(@Param('id') id: string) {
     const numericId = parseInt(id, 10); // Convert to number
     return this.orderService.deleteOrder(numericId);
-    
   }
 }

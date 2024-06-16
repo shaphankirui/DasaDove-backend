@@ -1,28 +1,54 @@
 // src/order/dto/order.dto.ts
 
-import { IsNotEmpty, IsString, IsNumber, IsPositive } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsPositive,
+  IsBoolean,
+  IsArray,
+  IsOptional,
+} from 'class-validator';
 
 export class OrderDto {
   @IsNotEmpty()
+  @IsArray()
   items: any; // Adjust the type according to your data structure
 
   @IsNumber()
   @IsPositive()
   total: number;
 
-  @IsString()
-  @IsNotEmpty()
-  status: string;
+  @IsNumber()
+  @IsOptional()
+  madeBy: number;
 
   @IsNumber()
-  @IsPositive()
-  payment: number;
+  cashPaid: number;
+  @IsNumber()
+  mpesaPaid: number;
+  @IsNumber()
+  bankPaid: number;
+  @IsNumber()
+  totalAmountPaid: number;
+  @IsNumber()
+  @IsOptional()
+  taxAmount: number;
+  @IsNumber()
+  @IsOptional()
+  discountAmount: number;
+
+  @IsNumber()
+  @IsOptional()
+  customerId: number;
 
   @IsString()
-  @IsNotEmpty()
-  customer: string;
-
-  @IsString()
-  @IsNotEmpty()
-  location: string;
+  @IsOptional()
+  printerIp: string;
+  @IsBoolean()
+  @IsOptional()
+  isVoided: boolean;
+  @IsBoolean()
+  @IsOptional()
+  voidedBy: boolean;
 }
