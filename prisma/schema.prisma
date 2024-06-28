@@ -82,20 +82,21 @@ model Order {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  items           Json // Store order items as JSON
-  total           Float
-  cashPaid        Float
-  mpesaPaid       Float
-  bankPaid        Float
-  totalAmountPaid Float
-  taxAmount       Float
-  discountAmount  Float
-  customerId      Int
-  printerIp       String
-  isVoided        Boolean
-  voidedBy        Boolean
-  userId          Int
-  user            User    @relation(fields: [userId], references: [id])
+  items              Json // Store order items as JSON
+  total              Float
+  cashPaid           Float
+  mpesaPaid          Float
+  bankPaid           Float
+  totalAmountPaid    Float
+  taxAmount          Float
+  discountAmount     Float
+  customerId         Int
+  printerIp          String
+  isVoided           Boolean
+  voidedBy           Boolean
+  userId             Int
+  mpesaTransactionId String  @default("")
+  user               User    @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }

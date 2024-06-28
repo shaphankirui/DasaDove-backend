@@ -9,6 +9,8 @@ import {
   Put,
   Delete,
   UseGuards,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { OrderDto } from './orders.dto';
 import { OrdersService } from './orders.service';
@@ -21,9 +23,9 @@ import { JwtGuard } from 'src/auth/guard';
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}
 
-  @Post()
-  async createOrder(@Body() dto: OrderDto, @GetUser() user: User) {
-    return this.orderService.createOrder(dto, user.id);
+  @Post('with-mpesa')
+  async createOrderWithMpesa(@Body() dto: OrderDto, @GetUser() user: User) {
+    return this.orderService.createOrderWithMpesa(dto, user.id);
   }
 
   @Get()
@@ -48,5 +50,31 @@ export class OrdersController {
   async deleteOrder(@Param('id') id: string) {
     const numericId = parseInt(id, 10); // Convert to number
     return this.orderService.deleteOrder(numericId);
+  }
+  @Post('mpesa/result')
+  async handleMpesaResult(@Req() req: Request, @Res() res: Response) {
+    // Process the result from M-Pesa
+    console.log('M-Pesa Result:', req.body);
+
+    // Here you could update the order status based on the M-Pesa result
+    // For example:
+    // const transactionId = req.body.TransactionID;
+    // const resultCode = req.body.ResultCode;
+    // await this.orderService.updateOrderMpesaStatus(transactionId, resultCode);
+
+    // res.status(200).send('OK');
+  }
+
+  @Post('mpesa/timeout')
+  async handleMpesaTimeout(@Req() req: Request, @Res() res: Response) {
+    // Handle timeout scenario
+    console.log('M-Pesa Timeout:', req.body);
+
+    // Here you could update the order status to indicate a timeout
+    // For example:
+    // const transactionId = req.body.TransactionID;
+    // await this.orderService.updateOrderMpesaStatus(transactionId, 'TIMEOUT');
+
+    // res.status(200).send('OK');
   }
 }

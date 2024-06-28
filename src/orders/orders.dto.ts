@@ -51,4 +51,7 @@ export class OrderDto {
   @IsBoolean()
   @IsOptional()
   voidedBy: boolean;
+  @IsString()
+  @IsOptional()
+  mpesaTransactionId: string;
 }

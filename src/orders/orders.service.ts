@@ -3,12 +3,33 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderDto } from './orders.dto';
+import { MpesaService } from 'src/mpesa-auth/mpesa/mpesa.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mpesaService: MpesaService,
+  ) {}
 
-  async createOrder(dto: OrderDto, userId: number) {
+  // ... existing methods ...
+
+  async createOrderWithMpesa(dto: OrderDto, userId: number) {
+    // Check M-Pesa transaction
+    const mpesaResult = await this.mpesaService.checkTransaction(
+      dto.mpesaTransactionId,
+    );
+
+    // Validate the M-Pesa transaction
+    if (
+      mpesaResult.ResultCode !== '0' ||
+      mpesaResult.ResultDesc !==
+        'The service request is processed successfully.'
+    ) {
+      throw new Error('M-Pesa transaction failed or not found');
+    }
+
+    // If M-Pesa transaction is valid, create the order
     return this.prisma.order.create({
       data: {
         items: dto.items,
@@ -23,6 +44,7 @@ export class OrdersService {
         printerIp: dto.printerIp,
         isVoided: dto.isVoided,
         voidedBy: dto.voidedBy,
+        mpesaTransactionId: dto.mpesaTransactionId,
         user: {
           connect: { id: userId },
         },
