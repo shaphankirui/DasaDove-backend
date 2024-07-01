@@ -23,6 +23,10 @@ export class MpesaAuthService {
           },
         },
       );
+      console.log(
+        'Access token from the daraja api',
+        response.data.access_token,
+      );
 
       return response.data.access_token;
     } catch (error) {

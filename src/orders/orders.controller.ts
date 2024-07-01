@@ -23,9 +23,13 @@ import { JwtGuard } from 'src/auth/guard';
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}
 
-  @Post('with-mpesa')
+  // @Post('with-mpesa')
+  // async createOrderWithMpesa(@Body() dto: OrderDto, @GetUser() user: User) {
+  //   return this.orderService.createOrderWithMpesa(dto, user.id);
+  // }
+  @Post()
   async createOrderWithMpesa(@Body() dto: OrderDto, @GetUser() user: User) {
-    return this.orderService.createOrderWithMpesa(dto, user.id);
+    return this.orderService.createOrder(dto, user.id);
   }
 
   @Get()

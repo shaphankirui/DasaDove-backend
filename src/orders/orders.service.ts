@@ -14,7 +14,7 @@ export class OrdersService {
 
   // ... existing methods ...
 
-  async createOrderWithMpesa(dto: OrderDto, userId: number) {
+  async createOrder(dto: OrderDto, userId: number) {
     // Check M-Pesa transaction
     const mpesaResult = await this.mpesaService.checkTransaction(
       dto.mpesaTransactionId,
@@ -51,6 +51,42 @@ export class OrdersService {
       },
     });
   }
+  // async createOrder(createOrderDto: OrderDto, userId: number) {
+  //   const {
+  //     items,
+  //     total,
+  //     cashPaid,
+  //     mpesaPaid,
+  //     bankPaid,
+  //     totalAmountPaid,
+  //     taxAmount,
+  //     discountAmount,
+  //     customerId,
+  //     printerIp,
+  //     isVoided,
+  //     voidedBy,
+  //   } = createOrderDto;
+
+  //   return this.prisma.order.create({
+  //     data: {
+  //       items,
+  //       total,
+  //       cashPaid,
+  //       mpesaPaid,
+  //       bankPaid,
+  //       totalAmountPaid,
+  //       taxAmount,
+  //       discountAmount,
+  //       customerId,
+  //       printerIp,
+  //       isVoided,
+  //       voidedBy,
+  //       user: {
+  //         connect: { id: userId },
+  //       },
+  //     },
+  //   });
+  // }
 
   async getAllOrders() {
     return this.prisma.order.findMany();

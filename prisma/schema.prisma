@@ -6,8 +6,7 @@ generator client {
 }
 
 datasource db {
-  // provider = "postgresql"
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -95,8 +94,9 @@ model Order {
   isVoided           Boolean
   voidedBy           Boolean
   userId             Int
-  mpesaTransactionId String  @default("")
-  user               User    @relation(fields: [userId], references: [id])
+  mpesaTransactionId String             @default("")
+  user               User               @relation(fields: [userId], references: [id])
+  MpesaTransaction   MpesaTransaction[]
 
   @@map("orders")
 }
@@ -161,4 +161,23 @@ model Careers {
   user               User     @relation(fields: [userId], references: [id])
 
   @@map("careers")
+}
+
+model MpesaTransaction {
+  id                 Int       @id @default(autoincrement())
+  merchantRequestID  String
+  checkoutRequestID  String
+  resultCode         Int
+  resultDesc         String
+  amount             Float?
+  mpesaReceiptNumber String?
+  transactionDate    DateTime?
+  phoneNumber        String?
+  orderId            Int?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  order Order? @relation(fields: [orderId], references: [id])
+
+  @@map("mpesa_transactions")
 }

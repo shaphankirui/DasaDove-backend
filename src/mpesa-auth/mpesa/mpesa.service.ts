@@ -2,10 +2,16 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { MpesaAuthService } from '../mpesa-auth.service';
 import { mpesaConfig } from 'mpesa.config';
+import { MpesaCallbackDto } from './mpesa-callback.dto';
+import { MpesaTransactionData } from './mpesaTransactions.interface';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class MpesaService {
-  constructor(private authService: MpesaAuthService) {}
+  constructor(
+    private authService: MpesaAuthService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   private readonly baseUrl =
     mpesaConfig.environment === 'production'
@@ -39,6 +45,120 @@ export class MpesaService {
       return response.data;
     } catch (error) {
       throw new Error('Failed to check M-Pesa transaction');
+    }
+  }
+  async initiateSTKPush(
+    phoneNumber: string,
+    amount: number,
+    accountReference: string,
+    transactionDesc: string,
+  ): Promise<any> {
+    const accessToken = await this.authService.getAccessToken();
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[^0-9]/g, '')
+      .slice(0, -3);
+    const password = Buffer.from(
+      mpesaConfig.shortcode + mpesaConfig.passkey + timestamp,
+    ).toString('base64');
+
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/mpesa/stkpush/v1/processrequest`,
+        {
+          BusinessShortCode: mpesaConfig.shortcode,
+          Password: password,
+          Timestamp: timestamp,
+          TransactionType: 'CustomerPayBillOnline',
+          Amount: amount,
+          PartyA: phoneNumber,
+          PartyB: mpesaConfig.shortcode,
+          PhoneNumber: phoneNumber,
+          CallBackURL: `${mpesaConfig.callbackUrl}/mpesa/callback`,
+          AccountReference: accountReference,
+          TransactionDesc: transactionDesc,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      console.log('STK Push response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error(
+        'STK Push error:',
+        error.response ? error.response.data : error.message,
+      );
+      throw new Error('Failed to initiate STK Push');
+    }
+  }
+  async handleSTKPushCallback(callbackData: any) {
+    console.log(
+      'Received M-Pesa callback:',
+      JSON.stringify(callbackData, null, 2),
+    );
+
+    // Check if callbackData is empty or undefined
+    if (!callbackData || Object.keys(callbackData).length === 0) {
+      console.error('Received empty or undefined callback data');
+      return {
+        success: false,
+        message: 'Invalid callback data received',
+      };
+    }
+
+    // Check if the expected structure exists
+    if (!callbackData.Body || !callbackData.Body.stkCallback) {
+      console.error('Callback data does not have the expected structure');
+      return {
+        success: false,
+        message: 'Invalid callback data structure',
+      };
+    }
+
+    const {
+      ResultCode,
+      ResultDesc,
+      MerchantRequestID,
+      CheckoutRequestID,
+      CallbackMetadata,
+    } = callbackData.Body.stkCallback;
+
+    const transactionData: MpesaTransactionData = {
+      merchantRequestID: MerchantRequestID,
+      checkoutRequestID: CheckoutRequestID,
+      resultCode: ResultCode,
+      resultDesc: ResultDesc,
+    };
+
+    if (ResultCode === 0 && CallbackMetadata) {
+      // Process successful transaction
+      // ... (rest of your existing code for successful transactions)
+    } else {
+      console.log(`Failed M-Pesa transaction: ${ResultDesc}`);
+    }
+
+    try {
+      // Save the transaction data
+      const savedTransaction = await this.prisma.mpesaTransaction.create({
+        data: transactionData,
+      });
+
+      return {
+        success: ResultCode === 0,
+        message: ResultDesc,
+        data: savedTransaction,
+      };
+    } catch (error) {
+      console.error('Error saving transaction data:', error);
+      return {
+        success: false,
+        message: 'Error processing transaction',
+      };
     }
   }
 }
