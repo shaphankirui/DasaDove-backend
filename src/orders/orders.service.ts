@@ -1,5 +1,3 @@
-// orders.service.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderDto } from './orders.dto';
@@ -11,8 +9,6 @@ export class OrdersService {
     private readonly prisma: PrismaService,
     private readonly mpesaService: MpesaService,
   ) {}
-
-  // ... existing methods ...
 
   async createOrder(dto: OrderDto, userId: number) {
     // Check M-Pesa transaction
@@ -32,7 +28,7 @@ export class OrdersService {
     // If M-Pesa transaction is valid, create the order
     return this.prisma.order.create({
       data: {
-        items: dto.items,
+        items: dto.items, // Assuming `items` is a list of items in your order
         total: dto.total,
         cashPaid: dto.cashPaid,
         mpesaPaid: dto.mpesaPaid,
@@ -40,53 +36,16 @@ export class OrdersService {
         totalAmountPaid: dto.totalAmountPaid,
         taxAmount: dto.taxAmount,
         discountAmount: dto.discountAmount,
-        customerId: dto.customerId,
+        customerId: dto.customerId, // Ensure customerId matches the type expected by Prisma
         printerIp: dto.printerIp,
         isVoided: dto.isVoided,
         voidedBy: dto.voidedBy,
         mpesaTransactionId: dto.mpesaTransactionId,
-        user: {
-          connect: { id: userId },
-        },
+        // Assuming `userId` is for the user who created the order
+        user: { connect: { id: userId } },
       },
     });
   }
-  // async createOrder(createOrderDto: OrderDto, userId: number) {
-  //   const {
-  //     items,
-  //     total,
-  //     cashPaid,
-  //     mpesaPaid,
-  //     bankPaid,
-  //     totalAmountPaid,
-  //     taxAmount,
-  //     discountAmount,
-  //     customerId,
-  //     printerIp,
-  //     isVoided,
-  //     voidedBy,
-  //   } = createOrderDto;
-
-  //   return this.prisma.order.create({
-  //     data: {
-  //       items,
-  //       total,
-  //       cashPaid,
-  //       mpesaPaid,
-  //       bankPaid,
-  //       totalAmountPaid,
-  //       taxAmount,
-  //       discountAmount,
-  //       customerId,
-  //       printerIp,
-  //       isVoided,
-  //       voidedBy,
-  //       user: {
-  //         connect: { id: userId },
-  //       },
-  //     },
-  //   });
-  // }
 
   async getAllOrders() {
     return this.prisma.order.findMany();

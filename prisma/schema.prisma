@@ -33,7 +33,6 @@ model Blog {
   title      String
   body       String
   pictureUrl String?
-  // postedBy String?
   slug       String?
   createdAt  DateTime @default(now())
   userId     Int
@@ -180,4 +179,88 @@ model MpesaTransaction {
   order Order? @relation(fields: [orderId], references: [id])
 
   @@map("mpesa_transactions")
+}
+
+model Quotation {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  referenceNumber String   @unique
+  supplierId      Int
+  items           Json
+  totalAmount     Float
+  status          String
+  supplier        Supplier @relation(fields: [supplierId], references: [id])
+
+  @@map("quotations")
+}
+
+model LocalPurchaseOrder {
+  id              Int      @id @default(autoincrement())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  referenceNumber String   @unique
+  supplierId      Int
+  items           Json
+  totalAmount     Float
+  status          String
+  supplier        Supplier @relation(fields: [supplierId], references: [id])
+
+  @@map("local_purchase_orders")
+}
+
+model Supplier {
+  id                   Int                  @id @default(autoincrement())
+  name                 String
+  phone                String
+  totalUnpaidSuppliers Int
+  deleted              Boolean
+  Quotation            Quotation[]
+  LocalPurchaseOrder   LocalPurchaseOrder[]
+
+  @@map("suppliers")
+}
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  fullName    String
+  phoneNumber String
+  dueCredit   Float?
+  isActive    Boolean?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("customers")
+}
+
+model CreditSale {
+  id                      Int      @id @default(autoincrement())
+  customer_id             Int
+  order_id                Int
+  credit_amount           Float
+  order_date              DateTime
+  payment_date            DateTime
+  amount_paid             Float
+  fully_paid              Float
+  customer_name           String
+  created_by              String
+  shift_id                Int
+  phone_number            String
+  order_remarks           String? // Optional
+  national_id             String? // Optional
+  confirm_delete          Boolean? // Optional
+  cash_paid               Float? // Optional
+  mpesa_paid              Float? // Optional
+  bank_paid               Float? // Optional
+  mpesa_confirmation_code String? // Optional
+  bank_confirmation_code  String? // Optional
+  balance                 Float? // Optional
+  complementary_of        String? // Optional
+  complimentary_amount    Float? // Optional
+  voucher_code            String? // Optional
+  voucher_amount          Float? // Optional
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@map("credit_sales")
 }

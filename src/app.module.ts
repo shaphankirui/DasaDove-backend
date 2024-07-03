@@ -11,6 +11,11 @@ import { TendersModule } from './tenders/tenders.module';
 import { CareersModule } from './careers/careers.module';
 import { TeamModule } from './team/team.module';
 import { MpesaAuthModule } from './mpesa-auth/mpesa-auth.module';
+import { CustomersModule } from './customers/customers.module';
+import { SurpliersModule } from './surpliers/surpliers.module';
+import { QuotationsModule } from './quotations/quotations.module';
+import { LpoModule } from './lpo/lpo.module';
+import { CreditSaleModule } from './credit-sale/credit-sale.module';
 
 
 
@@ -31,6 +36,11 @@ import { MpesaAuthModule } from './mpesa-auth/mpesa-auth.module';
     CareersModule,
     TeamModule,
     MpesaAuthModule,
+    CustomersModule,
+    SurpliersModule,
+    QuotationsModule,
+    LpoModule,
+    CreditSaleModule,
      
     ],
   controllers: [],
