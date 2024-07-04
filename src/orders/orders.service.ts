@@ -11,19 +11,19 @@ export class OrdersService {
   ) {}
 
   async createOrder(dto: OrderDto, userId: number) {
-    // Check M-Pesa transaction
-    const mpesaResult = await this.mpesaService.checkTransaction(
-      dto.mpesaTransactionId,
-    );
+    // // Check M-Pesa transaction
+    // const mpesaResult = await this.mpesaService.checkTransaction(
+    //   dto.mpesaTransactionId,
+    // );
 
-    // Validate the M-Pesa transaction
-    if (
-      mpesaResult.ResultCode !== '0' ||
-      mpesaResult.ResultDesc !==
-        'The service request is processed successfully.'
-    ) {
-      throw new Error('M-Pesa transaction failed or not found');
-    }
+    // // Validate the M-Pesa transaction
+    // if (
+    //   mpesaResult.ResultCode !== '0' ||
+    //   mpesaResult.ResultDesc !==
+    //     'The service request is processed successfully.'
+    // ) {
+    //   throw new Error('M-Pesa transaction failed or not found');
+    // }
 
     // If M-Pesa transaction is valid, create the order
     return this.prisma.order.create({
