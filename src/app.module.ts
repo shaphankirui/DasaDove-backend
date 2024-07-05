@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { BlogModule } from './blog/blog.module';
@@ -8,7 +9,6 @@ import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { NewsModule } from './news/news.module';
 import { TendersModule } from './tenders/tenders.module';
-import { CareersModule } from './careers/careers.module';
 import { TeamModule } from './team/team.module';
 import { MpesaAuthModule } from './mpesa-auth/mpesa-auth.module';
 import { CustomersModule } from './customers/customers.module';
@@ -17,12 +17,10 @@ import { QuotationsModule } from './quotations/quotations.module';
 import { LpoModule } from './lpo/lpo.module';
 import { CreditSaleModule } from './credit-sale/credit-sale.module';
 
-
-
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal:true
+      isGlobal: true,
     }),
     AuthModule,
     UserModule,
@@ -33,7 +31,6 @@ import { CreditSaleModule } from './credit-sale/credit-sale.module';
     OrdersModule,
     NewsModule,
     TendersModule,
-    CareersModule,
     TeamModule,
     MpesaAuthModule,
     CustomersModule,
@@ -41,8 +38,7 @@ import { CreditSaleModule } from './credit-sale/credit-sale.module';
     QuotationsModule,
     LpoModule,
     CreditSaleModule,
-     
-    ],
+  ],
   controllers: [],
   providers: [],
 })
