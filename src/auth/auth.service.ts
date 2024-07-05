@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -86,5 +87,63 @@ export class AuthService {
           userEmail,
         };
       });
+  }
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const users = await this.prisma.user.findMany({
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+          username: true,
+          createdAt: true,
+          updatedAt: true,
+          password: true,
+        },
+      });
+      return users;
+    } catch (error) {
+      this.logger.error(
+        `Error occurred while fetching all users: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Error occurred while fetching users',
+      );
+    }
+  }
+
+  async getUserById(id: number): Promise<User> {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+          username: true,
+          createdAt: true,
+          updatedAt: true,
+          password: true,
+        },
+      });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID ${id} not found`);
+      }
+
+      return user;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(
+        `Error occurred while fetching user by ID: ${error.message}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException(
+        'Error occurred while fetching user',
+      );
+    }
   }
 }
