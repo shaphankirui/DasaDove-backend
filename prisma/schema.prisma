@@ -15,15 +15,20 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  email    String    @unique
-  password String
-  fullName String
-  username String    @unique
-  Blog     Blog[]
-  Order    Order[]
-  News     News[]
-  Tenders  Tenders[]
-  Careers  Careers[]
+  email     String    @unique
+  password  String
+  fullName  String
+  username  String    @unique
+  phone     String    @default("")
+  status    String    @default("Active")
+  role      String    @default("Admin")
+  createdBy String    @default("")
+  photoURL  String    @default("https://res.cloudinary.com/dfsd8beyu/image/upload/v1720257318/defaultUser_f7bvpx.webp")
+  Blog      Blog[]
+  Order     Order[]
+  News      News[]
+  Tenders   Tenders[]
+  Careers   Careers[]
 
   @@map("users")
 }

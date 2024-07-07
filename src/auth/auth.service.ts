@@ -32,6 +32,11 @@ export class AuthService {
           password: hash,
           fullName: dto.fullName, // Ensure firstName is included
           username: dto.username,
+          phone: dto.phone,
+          photoURL: dto.photoURL,
+          role: dto.role,
+          status: dto.status,
+          createdBy: dto.createdBy,
         },
       });
       delete user.password; // Make sure password is not returned in the response
@@ -99,6 +104,11 @@ export class AuthService {
           createdAt: true,
           updatedAt: true,
           password: true,
+          role: true,
+          createdBy: true,
+          photoURL: true,
+          status: true,
+          phone: true,
         },
       });
       return users;
@@ -125,6 +135,11 @@ export class AuthService {
           createdAt: true,
           updatedAt: true,
           password: true,
+          role: true,
+          createdBy: true,
+          photoURL: true,
+          status: true,
+          phone: true,
         },
       });
 
