@@ -11,6 +11,7 @@ import {
   UseGuards,
   Req,
   Res,
+  Query,
 } from '@nestjs/common';
 import { OrderDto } from './orders.dto';
 import { OrdersService } from './orders.service';
@@ -35,6 +36,26 @@ export class OrdersController {
   @Get()
   async getAllOrders() {
     return this.orderService.getAllOrders();
+  }
+  @Get('report/day')
+  async getReportForDay(@Query('date') date: string) {
+    return this.orderService.getReportForDay(date);
+  }
+
+  @Get('report/month')
+  async getReportForMonth(
+    @Query('year') year: number,
+    @Query('month') month: number,
+  ) {
+    return this.orderService.getReportForMonth(year, month);
+  }
+
+  @Get('report/range')
+  async getReportForDateRange(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.orderService.getReportForDateRange(startDate, endDate);
   }
 
   @Get(':id')

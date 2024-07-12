@@ -63,6 +63,76 @@ export class OrdersService {
     return order;
   }
 
+  async getReportForDay(date: string) {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: new Date(date),
+          lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)),
+        },
+      },
+    });
+
+    return this.calculateReportData(orders);
+  }
+
+  async getReportForMonth(year: number, month: number) {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+
+    const orders = await this.prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lt: new Date(endDate.getTime() + 24 * 60 * 60 * 1000),
+        },
+      },
+    });
+
+    return this.calculateReportData(orders);
+  }
+
+  async getReportForDateRange(startDate: string, endDate: string) {
+    const orders = await this.prisma.order.findMany({
+      where: {
+        createdAt: {
+          gte: new Date(startDate),
+          lt: new Date(
+            new Date(endDate).setDate(new Date(endDate).getDate() + 1),
+          ),
+        },
+      },
+    });
+
+    return this.calculateReportData(orders);
+  }
+
+  private calculateReportData(orders: any[]) {
+    const totalSales = orders.length;
+    const totalEarnings = orders.reduce((sum, order) => sum + order.total, 0);
+    const totalCashPaid = orders.reduce(
+      (sum, order) => sum + order.cashPaid,
+      0,
+    );
+    const totalMpesaPaid = orders.reduce(
+      (sum, order) => sum + order.mpesaPaid,
+      0,
+    );
+    const totalBankPaid = orders.reduce(
+      (sum, order) => sum + order.bankPaid,
+      0,
+    );
+
+    return {
+      orders,
+      totalSales,
+      totalEarnings,
+      totalCashPaid,
+      totalMpesaPaid,
+      totalBankPaid,
+    };
+  }
+
   async updateOrder(id: number, dto: OrderDto) {
     const existingOrder = await this.prisma.order.findUnique({
       where: { id },

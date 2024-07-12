@@ -41,7 +41,7 @@ export class AuthService {
       });
       delete user.password; // Make sure password is not returned in the response
 
-      return this.signToken(user.id, user.email);
+      return this.signToken(user.id, user.email, user);
     } catch (error) {
       this.logger.error(
         `Error occurred during sign-up: ${error.message}`,
@@ -66,12 +66,13 @@ export class AuthService {
 
     const pwMatches = await argon.verify(user.password, dto.password);
     if (!pwMatches) throw new ForbiddenException('Credentials Is Incorrect');
-    return this.signToken(user.id, user.email);
+    return this.signToken(user.id, user.email, user);
   }
 
   signToken(
     userId: number,
     email: string,
+    user: User = null,
   ): Promise<{ access_token: string; userEmail: string }> {
     const payload = {
       sub: userId,
@@ -90,6 +91,7 @@ export class AuthService {
         return {
           access_token: token,
           userEmail,
+          user,
         };
       });
   }
