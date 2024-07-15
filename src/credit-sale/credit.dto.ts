@@ -1,7 +1,9 @@
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsDateString,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -10,8 +12,12 @@ import {
 export class CreditSaleDto {
   @IsNumber()
   customer_id: number;
+  @IsNotEmpty()
+  @IsArray()
+  items: any;
 
   @IsNumber()
+  @IsOptional()
   order_id: number;
 
   @IsNumber()
@@ -24,9 +30,11 @@ export class CreditSaleDto {
   payment_date: Date;
 
   @IsNumber()
+  @IsOptional()
   amount_paid: number;
 
   @IsNumber()
+  @IsOptional()
   fully_paid: number;
 
   @IsString()
@@ -36,9 +44,11 @@ export class CreditSaleDto {
   created_by: string;
 
   @IsNumber()
+  @IsOptional()
   shift_id: number;
 
   @IsString()
+  @IsOptional()
   phone_number: string;
 
   @IsOptional()

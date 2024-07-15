@@ -101,6 +101,7 @@ model Order {
   mpesaTransactionId String             @default("")
   user               User               @relation(fields: [userId], references: [id])
   MpesaTransaction   MpesaTransaction[]
+  Refund             Refund[]
 
   @@map("orders")
 }
@@ -239,18 +240,19 @@ model Customer {
 }
 
 model CreditSale {
-  id                      Int      @id @default(autoincrement())
+  id                      Int       @id @default(autoincrement())
   customer_id             Int
-  order_id                Int
+  order_id                Int?
+  items                   Json      @default("[]")
   credit_amount           Float
-  order_date              DateTime
-  payment_date            DateTime
-  amount_paid             Float
-  fully_paid              Float
+  order_date              DateTime?
+  payment_date            DateTime?
+  amount_paid             Float?
+  fully_paid              Float?
   customer_name           String
   created_by              String
-  shift_id                Int
-  phone_number            String
+  shift_id                Int?
+  phone_number            String?
   order_remarks           String? // Optional
   national_id             String? // Optional
   confirm_delete          Boolean? // Optional
@@ -264,8 +266,19 @@ model CreditSale {
   complimentary_amount    Float? // Optional
   voucher_code            String? // Optional
   voucher_amount          Float? // Optional
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
 
   @@map("credit_sales")
+}
+
+model Refund {
+  id                  Int      @id @default(autoincrement())
+  orderId             Int
+  order               Order    @relation(fields: [orderId], references: [id])
+  refundItems         Json
+  totalRefund         Float
+  refundPaymentMethod String
+  refundedBy          String
+  createdAt           DateTime @default(now())
 }

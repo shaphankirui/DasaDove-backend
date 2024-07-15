@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderDto } from './orders.dto';
 import { MpesaService } from 'src/mpesa-auth/mpesa/mpesa.service';
+import { RefundDto } from './refund.dto';
 
 @Injectable()
 export class OrdersService {
@@ -131,6 +136,92 @@ export class OrdersService {
       totalMpesaPaid,
       totalBankPaid,
     };
+  }
+
+  async refundOrder(dto: RefundDto) {
+    const {
+      orderId,
+      refundItems,
+      totalRefund,
+      refundPaymentMethod,
+      refundedBy,
+    } = dto;
+
+    // Start a transaction
+    return this.prisma.$transaction(async (prisma) => {
+      // Get the current order
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+      });
+
+      if (!order) {
+        throw new NotFoundException(`Order with ID ${orderId} not found`);
+      }
+
+      // Parse the items JSON
+      const orderItems = JSON.parse(order.items as string);
+
+      // Process each refund item
+      for (const refundItem of refundItems) {
+        const originalItem = orderItems.find(
+          (item) => item.id === refundItem.id,
+        );
+        if (!originalItem) {
+          throw new BadRequestException(
+            `Item with ID ${refundItem.id} not found in the original order`,
+          );
+        }
+
+        if (refundItem.quantity > originalItem.quantity) {
+          throw new BadRequestException(
+            `Cannot refund more items than originally ordered for product ${refundItem.id}`,
+          );
+        }
+
+        // Update the order item quantity
+        originalItem.quantity -= refundItem.quantity;
+
+        // Update the product quantity
+        await prisma.product.update({
+          where: { id: refundItem.id },
+          data: { quantity: { increment: refundItem.quantity } },
+        });
+      }
+
+      // Adjust the amount paid based on the refund payment method
+      const updateData: any = {
+        total: { decrement: totalRefund },
+        updatedAt: new Date(),
+        items: JSON.stringify(orderItems),
+      };
+
+      if (refundPaymentMethod === 'Cash') {
+        updateData.cashPaid = { decrement: totalRefund };
+      } else if (refundPaymentMethod === 'Mpesa') {
+        updateData.mpesaPaid = { decrement: totalRefund };
+      } else if (refundPaymentMethod === 'Bank') {
+        updateData.bankPaid = { decrement: totalRefund };
+      }
+
+      // Update the order
+      const updatedOrder = await prisma.order.update({
+        where: { id: orderId },
+        data: updateData,
+      });
+
+      // Store the refund
+      const refund = await prisma.refund.create({
+        data: {
+          orderId,
+          refundItems: JSON.stringify(refundItems),
+          totalRefund,
+          refundPaymentMethod,
+          refundedBy,
+        },
+      });
+
+      return { updatedOrder, refund };
+    });
   }
 
   async updateOrder(id: number, dto: OrderDto) {
