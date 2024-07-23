@@ -33,6 +33,15 @@ export class LpoController {
   async updateLpo(@Param('id') id: string, @Body() dto: LpoDto) {
     return this.lpoService.updateLpo(+id, dto);
   }
+  @Put(':id/approve')
+  async approveLpo(@Param('id') id: string) {
+    return this.lpoService.approveLpo(+id);
+  }
+
+  @Put(':id/reject')
+  async rejectLpo(@Param('id') id: string) {
+    return this.lpoService.rejectLpo(+id);
+  }
 
   @Delete(':id')
   async deleteLpo(@Param('id') id: string) {

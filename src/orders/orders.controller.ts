@@ -18,6 +18,7 @@ import { OrdersService } from './orders.service';
 import { User } from '@prisma/client';
 import { GetUser } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
+import { RefundDto } from './refund.dto';
 
 @UseGuards(JwtGuard)
 @Controller('orders')
@@ -31,6 +32,10 @@ export class OrdersController {
   @Post()
   async createOrderWithMpesa(@Body() dto: OrderDto, @GetUser() user: User) {
     return this.orderService.createOrder(dto, user.id);
+  }
+  @Post('refund')
+  async refundOrdes(@Body() dto: RefundDto) {
+    return this.orderService.refundOrder(dto);
   }
 
   @Get()

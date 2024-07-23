@@ -7,6 +7,7 @@ import {
   Put,
   Delete,
   UseGuards,
+  Patch,
 } from '@nestjs/common';
 import { ProductService } from './products.service';
 import { ProductDto } from './product.dto';
@@ -36,6 +37,13 @@ export class ProductController {
   @Put(':id')
   async updateProduct(@Param('id') id: string, @Body() dto: ProductDto) {
     return this.productService.updateProduct(+id, dto);
+  }
+  @Patch(':id/quantity')
+  async updateProductQuantity(
+    @Param('id') id: string,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.productService.updateProductQuantity(+id, quantity);
   }
 
   // @UseGuards(JwtGuard)

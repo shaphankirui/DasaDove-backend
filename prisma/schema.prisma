@@ -282,3 +282,16 @@ model Refund {
   refundedBy          String
   createdAt           DateTime @default(now())
 }
+
+model Inventory {
+  id           Int      @id @default(autoincrement())
+  product_id   String
+  quantity     Int
+  buying_price Float
+  added_by     String
+  total        Float
+  deleted      Boolean
+  createdAt    DateTime @default(now())
+
+  @@map("inventory")
+}

@@ -159,8 +159,16 @@ export class OrdersService {
       }
 
       // Parse the items JSON
-      const orderItems = JSON.parse(order.items as string);
-
+      let orderItems;
+      if (typeof order.items === 'string') {
+        try {
+          orderItems = JSON.parse(order.items);
+        } catch (error) {
+          throw new BadRequestException('Invalid order items format');
+        }
+      } else {
+        orderItems = order.items;
+      }
       // Process each refund item
       for (const refundItem of refundItems) {
         const originalItem = orderItems.find(

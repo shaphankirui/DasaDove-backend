@@ -1,15 +1,22 @@
-import { IsNotEmpty, IsNumber, IsString, IsJSON } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsJSON,
+  IsOptional,
+  IsArray,
+} from 'class-validator';
 
 export class LpoDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   referenceNumber: string;
 
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   supplierId: number;
 
-  @IsJSON()
+  @IsArray()
   @IsNotEmpty()
   items: any;
 
@@ -18,6 +25,6 @@ export class LpoDto {
   totalAmount: number;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   status: string;
 }

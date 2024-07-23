@@ -64,6 +64,16 @@ export class ProductService {
     });
   }
 
+  async updateProductQuantity(id: number, quantity: number) {
+    const existingProduct = await this.getProductById(id);
+    return this.prisma.product.update({
+      where: { id },
+      data: {
+        quantity: quantity,
+      },
+    });
+  }
+
   async deleteProduct(id: number) {
     await this.getProductById(id);
     return this.prisma.product.delete({

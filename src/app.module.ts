@@ -16,6 +16,7 @@ import { SurpliersModule } from './surpliers/surpliers.module';
 import { QuotationsModule } from './quotations/quotations.module';
 import { LpoModule } from './lpo/lpo.module';
 import { CreditSaleModule } from './credit-sale/credit-sale.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CreditSaleModule } from './credit-sale/credit-sale.module';
     QuotationsModule,
     LpoModule,
     CreditSaleModule,
+    InventoryModule,
   ],
   controllers: [],
   providers: [],
