@@ -1,13 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString, IsJSON } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsJSON } from 'class-validator';
 
 export class QuotationDto {
-  @IsString()
-  @IsNotEmpty()
-  referenceNumber: string;
-
   @IsNumber()
   @IsNotEmpty()
-  supplierId: number;
+  supplierId: number; // This will now store customerId
 
   @IsJSON()
   @IsNotEmpty()
@@ -16,8 +12,4 @@ export class QuotationDto {
   @IsNumber()
   @IsNotEmpty()
   totalAmount: number;
-
-  @IsString()
-  @IsNotEmpty()
-  status: string;
 }

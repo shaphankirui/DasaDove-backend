@@ -196,7 +196,6 @@ model Quotation {
   items           Json
   totalAmount     Float
   status          String
-  supplier        Supplier @relation(fields: [supplierId], references: [id])
 
   @@map("quotations")
 }
@@ -221,7 +220,6 @@ model Supplier {
   phone                String
   totalUnpaidSuppliers Int
   deleted              Boolean
-  Quotation            Quotation[]
   LocalPurchaseOrder   LocalPurchaseOrder[]
 
   @@map("suppliers")

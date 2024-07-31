@@ -47,7 +47,25 @@ export class LpoService {
     }
     return lpo;
   }
+  async getLposByDateRange(startDate: string, endDate: string) {
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
 
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    return this.prisma.localPurchaseOrder.findMany({
+      where: {
+        createdAt: {
+          gte: start,
+          lte: end,
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+  }
   async updateLpo(id: number, dto: LpoDto) {
     const existingLpo = await this.getLpoById(id);
     return this.prisma.localPurchaseOrder.update({

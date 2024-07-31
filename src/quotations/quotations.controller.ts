@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { QuotationsService } from './quotations.service';
 import { QuotationDto } from './quotation.dto';
+import { updateQuotationDto } from './updateQuote.dto';
 
 @Controller('quotations')
 export class QuotationsController {
@@ -30,7 +31,10 @@ export class QuotationsController {
   }
 
   @Put(':id')
-  async updateQuotation(@Param('id') id: string, @Body() dto: QuotationDto) {
+  async updateQuotation(
+    @Param('id') id: string,
+    @Body() dto: updateQuotationDto,
+  ) {
     return this.quotationsService.updateQuotation(+id, dto);
   }
 

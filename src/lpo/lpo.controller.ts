@@ -6,6 +6,7 @@ import {
   Post,
   Put,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { LpoService } from './lpo.service';
 import { LpoDto } from './lpo.dto';
@@ -22,6 +23,13 @@ export class LpoController {
   @Get()
   async getAllLpos() {
     return this.lpoService.getAllLpos();
+  }
+  @Get('range')
+  async getLposByDateRange(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    return this.lpoService.getLposByDateRange(startDate, endDate);
   }
 
   @Get(':id')

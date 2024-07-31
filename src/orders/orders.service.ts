@@ -7,9 +7,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderDto } from './orders.dto';
 import { MpesaService } from 'src/mpesa-auth/mpesa/mpesa.service';
 import { RefundDto } from './refund.dto';
+import * as ThermalPrinter from 'node-thermal-printer';
+import PrinterTypes from 'node-thermal-printer';
 
 @Injectable()
 export class OrdersService {
+  private printer: ThermalPrinter.printer | null = null;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly mpesaService: MpesaService,
@@ -259,5 +263,115 @@ export class OrdersService {
     return this.prisma.order.delete({
       where: { id },
     });
+  }
+
+  async printData(orderId: string, orderData: any) {
+    try {
+      const printer = new ThermalPrinter({
+        type: PrinterTypes.EPSON, // Adjust if you're using a different printer type
+        interface: 'printer:USB002',
+        options: {
+          timeout: 5000,
+        },
+        width: 48, // Adjust based on your printer's specifications
+        characterSet: 'PC437_USA', // Adjust if needed for your language
+      });
+
+      const isConnected = await printer.isPrinterConnected();
+      console.log('Printer connected:', isConnected);
+
+      if (!isConnected) {
+        throw new Error('Printer is not connected');
+      }
+
+      // Store information
+      const storeName = 'DEMO Org';
+      const storeAddress = 'P.O BOX 61600- 002100 ELDORET';
+      const storeBranch = 'Eldoret';
+      const storePhone = '(+254) 0705419040';
+      const tillNumber = '9478205';
+
+      // Order information
+      const orderNumber = orderData.orderId;
+      const servedBy = orderData.Served_by;
+      const orderDate = new Date().toLocaleString();
+      const items = orderData.Items;
+      const total = orderData.Total;
+      const subtotal = total * 0.84;
+      const tax = total * 0.16;
+
+      // Start printing
+      printer.alignCenter();
+      printer.setTextSize(1, 1);
+      printer.bold(true);
+      printer.println(storeName);
+      printer.bold(false);
+      printer.setTextNormal();
+      printer.println(storeAddress);
+      printer.println(storePhone);
+      printer.drawLine();
+
+      printer.bold(true);
+      printer.println(`Cash Sale #${orderNumber}`);
+      printer.println(`Date Time: ${orderDate}`);
+      printer.println(`Store: ${storeBranch}`);
+      printer.bold(false);
+      printer.drawLine();
+
+      // Print order items
+      items.forEach((item: any) => {
+        printer.leftRight(
+          `${item.selectedItems} x ${item.name}`,
+          `Ksh.${(item.price * item.selectedItems).toFixed(2)}`,
+        );
+      });
+
+      printer.drawLine();
+
+      // Print PAYMENTS MODES
+      printer.bold(true);
+      printer.println(`BUY GOODS: ${tillNumber}`);
+      printer.bold(false);
+      printer.drawLine();
+
+      // Print totals
+      printer.leftRight('Subtotal:', `Ksh.${subtotal.toFixed(2)}`);
+      printer.leftRight('Tax:', `Ksh.${tax.toFixed(2)}`);
+      printer.bold(true);
+      printer.leftRight('Total:', `Ksh.${total.toFixed(2)}`);
+      printer.bold(false);
+
+      // Print footer
+      printer.drawLine();
+      printer.println(`You were Served By: ${servedBy}`);
+      printer.println('Thank you for your business!');
+      printer.println('');
+
+      // pos bottom
+      printer.drawLine();
+      printer.println('NON-FISCAL RECEIPT');
+      printer.println('FISCAL RECEIPT');
+      printer.println('PROVIDED UPON CHECKOUT');
+      printer.println('--** END OF NON-TAX INVOICE **--');
+      printer.println('');
+      printer.println('POS developed by LancolaTech Ltd');
+      printer.println('Call: +254715223428');
+      printer.println('www.c-pos.co.ke');
+
+      // Cut the paper
+      printer.cut();
+
+      // Execute print job
+      const result = await printer.execute();
+      console.log('Print successful:', result);
+    } catch (error) {
+      console.error('Error printing receipt:', error);
+      throw error; // Rethrow the error if you want to handle it in the calling function
+    }
+  }
+  private centerText(text: string): string {
+    const maxWidth = 48; // Assuming a maximum width of 48 characters
+    const padding = ' '.repeat(Math.max(0, (maxWidth - text.length) / 2));
+    return `${padding}${text}${padding}`;
   }
 }
