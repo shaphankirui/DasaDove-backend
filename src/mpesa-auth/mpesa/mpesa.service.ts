@@ -128,16 +128,54 @@ export class MpesaService {
       CallbackMetadata,
     } = callbackData.Body.stkCallback;
 
+    // Initialize transaction data object
     const transactionData: MpesaTransactionData = {
       merchantRequestID: MerchantRequestID,
       checkoutRequestID: CheckoutRequestID,
       resultCode: ResultCode,
       resultDesc: ResultDesc,
+      amount: null,
+      mpesaReceiptNumber: null,
+      transactionDate: null,
+      phoneNumber: null,
     };
 
     if (ResultCode === 0 && CallbackMetadata) {
-      // Process successful transaction
-      // ... (rest of your existing code for successful transactions)
+      // Extract additional transaction details from CallbackMetadata
+      for (const item of CallbackMetadata.Item) {
+        switch (item.Name) {
+          case 'Amount':
+            transactionData.amount = item.Value;
+            break;
+          case 'MpesaReceiptNumber':
+            transactionData.mpesaReceiptNumber = item.Value;
+            break;
+          case 'TransactionDate':
+            transactionData.transactionDate = new Date(
+              `${item.Value.toString().slice(0, 4)}-${item.Value.toString().slice(
+                4,
+                6,
+              )}-${item.Value.toString().slice(
+                6,
+                8,
+              )}T${item.Value.toString().slice(
+                8,
+                10,
+              )}:${item.Value.toString().slice(
+                10,
+                12,
+              )}:${item.Value.toString().slice(12, 14)}`,
+            );
+            break;
+          case 'PhoneNumber':
+            transactionData.phoneNumber = item.Value.toString();
+            break;
+          default:
+            break;
+        }
+      }
+
+      console.log('Extracted transaction data:', transactionData);
     } else {
       console.log(`Failed M-Pesa transaction: ${ResultDesc}`);
     }
