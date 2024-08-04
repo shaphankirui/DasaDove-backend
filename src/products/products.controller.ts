@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Patch,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './products.service';
 import { ProductDto } from './product.dto';
@@ -26,6 +27,10 @@ export class ProductController {
   @Get()
   async getAllProducts() {
     return this.productService.getAllProducts();
+  }
+  @Get('search/barcode')
+  async searchProductByBarcode(@Query('barcode') barcode: string) {
+    return this.productService.findProductByBarcode(barcode);
   }
 
   @Get(':id')

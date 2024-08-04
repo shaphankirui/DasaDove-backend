@@ -40,6 +40,15 @@ export class ProductService {
     }
     return product;
   }
+  async findProductByBarcode(barcode: string) {
+    const product = await this.prisma.product.findFirst({
+      where: { productIdNumber: barcode },
+    });
+    if (!product) {
+      throw new NotFoundException(`Product with barcode ${barcode} not found`);
+    }
+    return product;
+  }
 
   async updateProduct(id: number, dto: ProductDto) {
     const existingProduct = await this.getProductById(id);
