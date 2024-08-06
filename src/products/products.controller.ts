@@ -38,7 +38,6 @@ export class ProductController {
     return this.productService.getProductById(+id);
   }
 
-  // @UseGuards(JwtGuard)
   @Put(':id')
   async updateProduct(@Param('id') id: string, @Body() dto: ProductDto) {
     return this.productService.updateProduct(+id, dto);
